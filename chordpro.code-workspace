@@ -1,0 +1,39 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "app",
+				"type": "go",
+				"request": "launch",
+				"mode": "auto",
+				"program": "${workspaceFolder}/main.go",
+				"env": {},
+			},
+			{
+				"name": "transform",
+				"type": "go",
+				"request": "launch",
+				"mode": "auto",
+				"program": "${workspaceFolder}/main.go",
+				"env": {},
+				"args": [ "transform", "-o","old",  "test", "tmp"]
+			},
+			{
+				"name": "transform-file",
+				"type": "go",
+				"request": "launch",
+				"mode": "auto",
+				"program": "${workspaceFolder}/main.go",
+				"env": {},
+				"args": [ "transform-file", "test/across-the-universe.chopro"]
+			}
+		]
+	}
+}
