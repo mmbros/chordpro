@@ -23,6 +23,7 @@ const (
 	clsPair      = "column"
 	clsChord     = "chord"
 	clsLyric     = "lyrics"
+	clsError     = "error"
 )
 
 const (
@@ -33,6 +34,7 @@ const (
 	tagPair         = "span"
 	tagChord        = "u"
 	tagLyric        = "i"
+	tagError        = "div"
 )
 
 type HtmlDivFormatter struct {
@@ -172,6 +174,11 @@ func (f HtmlDivFormatter) FormatBody(s *Song) {
 
 	f.appendTagOpen(tagSong, clsSong, true)
 	f.appendParagraphs(s.Paragraphs)
+	if s.Err != nil {
+		f.appendTagOpen(tagError, clsError, false)
+		fmt.Fprint(f.w, s.Err.Error())
+		f.appendTagClose(tagSong, false)
+	}
 	f.appendTagClose(tagSong, false)
 	fmt.Fprint(f.w, "<!-- /", clsSong, " -->\n")
 }

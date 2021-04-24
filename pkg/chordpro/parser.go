@@ -1,6 +1,8 @@
 package chordpro
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/mmbros/chordpro/internal/lexer"
@@ -213,7 +215,11 @@ func ParseText(src string) Songs {
 	cur := cursor{}
 
 	l := lexer.New(src, stateText)
-	l.Start()
+	l.ErrorHandler = func(l *lexer.L) {
+		cur.getSong().Err = l.Err
+		fmt.Fprintln(os.Stderr, l.Err)
+	}
+	l.StartSync()
 
 	for {
 

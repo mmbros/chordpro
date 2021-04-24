@@ -45,6 +45,7 @@ type Songs []*Song
 type Song struct {
 	meta       metaItems
 	Paragraphs []*Paragraph
+	Err        error
 }
 
 type ParagraphType int
