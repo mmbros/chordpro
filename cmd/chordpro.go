@@ -205,6 +205,15 @@ func createFileAll(pathname string) (*os.File, error) {
 	return file, err
 }
 
+// [golang convert iso8859-1 to utf8](https://stackoverflow.com/questions/13510458/golang-convert-iso8859-1-to-utf8)
+func toUtf8(iso8859_1_buf []byte) string {
+	buf := make([]rune, len(iso8859_1_buf))
+	for i, b := range iso8859_1_buf {
+		buf[i] = rune(b)
+	}
+	return string(buf)
+}
+
 // transform function parse a chordpro.Songs object from io.Reader and output the resut to io.Writer.
 // It returns an error if the number of songs is not exactly one.
 // If the flag songFrontmatter is true, the first part of the result is the front matter created from the song metadata.
@@ -219,7 +228,7 @@ func transform(r io.Reader, w io.Writer, prefix string, songFrontmatter bool) er
 	}
 
 	// parse string
-	songs := chordpro.ParseText(string(data))
+	songs := chordpro.ParseText(toUtf8(data))
 
 	// check number of songs
 	if totSongs := len(songs); totSongs == 0 {
@@ -346,9 +355,10 @@ func Run(opts *Options) error {
 				ext := filepath.Ext(path)
 				switch strings.ToLower(ext) {
 				case ".cho", ".chopro", ".chordpro":
+					fmt.Println(relpath)
 					err = trasformFile(path, dstpath, overwrite, frontmatter)
-					if err == nil {
-						fmt.Println(dstpath)
+					if err != nil {
+						fmt.Fprintln(os.Stderr, err)
 					}
 				}
 			}
