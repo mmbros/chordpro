@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../chords/data"
 		}
 	],
 	"settings": {},
@@ -17,23 +20,40 @@
 				"env": {},
 			},
 			{
-				"name": "transform",
+				"name": "help",
 				"type": "go",
 				"request": "launch",
 				"mode": "auto",
 				"program": "${workspaceFolder}/main.go",
 				"env": {},
-				"args": [ "transform", "-o","old",  "test", "tmp"]
+				"args": [ "transform-file", "-h"]
+			},
+			{
+				"name": "transform",
+				"type": "go",
+				"request": "launch",
+				"mode": "auto",
+				"program": "/home/mau/Code/prj/chordpro/main.go",
+				"env": {},
+				"args": [ "transform",  "-o","all",  "/home/mau/Code/prj/chords/data/", "/home/mau/Code/prj/chords/site/content/chords/"]
 			},
 			{
 				"name": "transform-file",
 				"type": "go",
 				"request": "launch",
 				"mode": "auto",
-				"program": "${workspaceFolder}/main.go",
+				"program": "/home/mau/Code/prj/chordpro/main.go",
 				"env": {},
-				"args": [ "transform-file", "test/across-the-universe.chopro"]
-			}
+				"args": [ "transform-file", "-o","all","/home/mau/Code/prj/chords/data/c/Crowded.House/WhispersAndMoans.chopro"]
+			},			{
+				"name": "hugo",
+				"type": "go",
+				"request": "launch",
+				"mode": "auto",
+				"program": "/home/mau/Code/prj/chordpro/main.go",
+				"env": {},
+				"args": [ "hugo",  "/home/mau/Code/prj/chords/data/chords/", "/home/mau/Code/prj/chords/site/content/chords/"]
+			},
 		]
 	}
 }

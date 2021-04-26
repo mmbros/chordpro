@@ -20,7 +20,9 @@ const (
 	cmdnameTranformFile      = "transform-file"
 	cmdnameTranformFileAlias = "file"
 
-	cmdnameClearFolder = "clear"
+	cmdnameTranformHugo = "hugo"
+
+	// cmdnameClearFolder = "clear"
 )
 
 var appname string
@@ -33,13 +35,13 @@ Usage: %[1]s <command> [options] [args]
 Command:
   %-24[2]s transform all the chordpro files in the source folder
   %-24[3]s transform a single chordpro file
-  %-24[4]s clear
+  %-24[4]s adapt source folder to Hugo content folder
 `
 
 	fmt.Fprintf(flag.CommandLine.Output(), msg, appname,
 		fmt.Sprintf("%s (%s)", cmdnameTranformFolder, cmdnameTranformFolderAlias),
 		fmt.Sprintf("%s (%s)", cmdnameTranformFile, cmdnameTranformFileAlias),
-		cmdnameClearFolder,
+		cmdnameTranformHugo,
 	)
 }
 
@@ -73,6 +75,7 @@ Options:
 		cmdnameTranformFolder,
 	)
 }
+
 func usageTransformFile() {
 	const msg = `%[1]s %[10]s
     transform a chordpro file to html format.
@@ -99,6 +102,21 @@ Options:
 		defaultFrontmatter, cmd.FrontmatterNone, cmd.FrontmatterOverwrite, cmd.FrontmatterPreserve,
 		cmdnameTranformFile,
 	)
+}
+
+func usageTransformHugo() {
+	const msg = `%[1]s %[2]s
+    recursively transform all the chordpro files in the source folder
+    and saves them to the corrisponding location in the dest folder.
+
+Usage: %[1]s %[2]s [options] <source-folder> <dest-folder> 
+
+Options:
+  -h, --help
+        print this help message
+`
+
+	fmt.Fprintf(flag.CommandLine.Output(), msg, appname, cmdnameTranformHugo)
 }
 
 func cmdApp(name string, arguments []string) error {
@@ -163,6 +181,29 @@ func cmdTransformFile(name string, arguments []string) error {
 	return err
 }
 
+func cmdTransformHugo(name string, arguments []string) error {
+
+	fs := flag.NewFlagSet(name, flag.ContinueOnError)
+	var opts cmd.Options
+
+	fs.Usage = usageTransformHugo
+
+	err := fs.Parse(arguments)
+	if err != nil {
+		return err
+	}
+	opts.Input = fs.Arg(0)
+	opts.Output = fs.Arg(1)
+
+	opts.Hugo = true
+
+	err = cmd.Run(&opts)
+	if err != nil {
+		err = simpleflag.WrapError(err, name)
+	}
+	return err
+}
+
 func main() {
 	appname = path.Base(os.Args[0])
 
@@ -174,6 +215,9 @@ func main() {
 			},
 			cmdnameTranformFile + "," + cmdnameTranformFileAlias: {
 				ParseExec: cmdTransformFile,
+			},
+			cmdnameTranformHugo: {
+				ParseExec: cmdTransformHugo,
 			},
 		},
 	}

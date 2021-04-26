@@ -32,6 +32,7 @@ type Options struct {
 	Frontmatter string // front matter mode: "none", "preserve", "overwrite"
 	Recursive   bool   // recursively transforms every chord file found in the input folder
 	Index       bool   // recursively creates "_index.md" files for folders (only for recursive mode)
+	Hugo        bool
 }
 
 // internal overwrite values
@@ -319,6 +320,9 @@ func createIndexMD(root string) error {
 // Run executes the transformation from chordpro files to html files
 // based on the given options.
 func Run(opts *Options) error {
+	if opts.Hugo {
+		return runHugo(opts)
+	}
 
 	overwrite, err := parseOverwrite(opts.Overwrite)
 	if err != nil {

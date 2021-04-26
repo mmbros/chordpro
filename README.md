@@ -12,7 +12,7 @@ Command:
 
 ## transform
 
-Recursively transform all the chordpro files in the source folder and saves them to the corrisponding location in the dest folder.
+Recursively transform all the `chordpro` files in the source folder and saves them to the corrisponding location in the dest folder.
 
     chordpro transform [options] <source-folder> <dest-folder> 
 
