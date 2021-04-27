@@ -112,11 +112,17 @@ func usageTransformHugo() {
 Usage: %[1]s %[2]s [options] <source-folder> <dest-folder> 
 
 Options:
+  -o, --overwrite <overwrite-mode>
+        how to handle existing output file (default %[3]q)
+          %-11[4]q: never overwrite existing files
+          %-11[5]q: overwrite older files
+          %-11[6]q: overwrite all files
   -h, --help
         print this help message
 `
 
-	fmt.Fprintf(flag.CommandLine.Output(), msg, appname, cmdnameTranformHugo)
+	fmt.Fprintf(flag.CommandLine.Output(), msg, appname, cmdnameTranformHugo,
+		defaultOverwrite, cmd.OverwriteNone, cmd.OverwriteOld, cmd.OverwriteAll)
 }
 
 func cmdApp(name string, arguments []string) error {
@@ -187,6 +193,7 @@ func cmdTransformHugo(name string, arguments []string) error {
 	var opts cmd.Options
 
 	fs.Usage = usageTransformHugo
+	simpleflag.AliasedStringVar(fs, &opts.Overwrite, "overwrite,o", defaultOverwrite, "")
 
 	err := fs.Parse(arguments)
 	if err != nil {

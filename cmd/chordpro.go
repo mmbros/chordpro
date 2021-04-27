@@ -229,7 +229,8 @@ func transform(r io.Reader, w io.Writer, prefix string, songFrontmatter bool) er
 	}
 
 	// parse string
-	songs := chordpro.ParseText(toUtf8(data))
+	file := chordpro.ParseText(toUtf8(data))
+	songs := file.Songs
 
 	// check number of songs
 	if totSongs := len(songs); totSongs == 0 {

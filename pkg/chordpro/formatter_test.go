@@ -11,7 +11,8 @@ func Test_ParseText(t *testing.T) {
 [Am]Working Class [G]Hero is [D]somethin' to be[Am]
 {comment: Tab from: http://www.guitartabs.cc/tabs/j/john_lennon/working_class_hero_crd_ver_3.html}
 When they've tortured and scared you for twenty odd years.`
-	ss := ParseText(src)
+	f := ParseText(src)
+	ss := f.Songs
 
 	{
 		// songs
@@ -64,14 +65,14 @@ The riff that they use in the song goes something like this
  
 [Dm]He wear no shoe shine, he got toe jam football
 `
-	ss := ParseText(src)
+	file := ParseText(src)
 
-	t.Log(ss)
+	t.Log(file)
 
 	var sb strings.Builder
 
 	f := NewHtmlDivFormatter(&sb)
-	f.FormatBody(ss[0])
+	f.FormatBody(file.Songs[0])
 	t.Log(sb.String())
 
 	t.FailNow()

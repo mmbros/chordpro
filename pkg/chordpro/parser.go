@@ -9,11 +9,12 @@ import (
 )
 
 type cursor struct {
-	songs Songs
-	song  *Song
-	par   *Paragraph
-	line  *Line
-	pair  *ChordLyricPair
+	frontmatter string
+	songs       Songs
+	song        *Song
+	par         *Paragraph
+	line        *Line
+	pair        *ChordLyricPair
 
 	onlyText bool
 }
@@ -209,12 +210,12 @@ func (c *cursor) parseDirective(src string) {
 
 }
 
-func ParseText(src string) Songs {
+func ParseText(src string) *File {
 
 	var newlineCounter int
 	cur := cursor{}
 
-	l := lexer.New(src, stateText)
+	l := lexer.New(src, stateTrimInitialWhitespace)
 	l.ErrorHandler = func(l *lexer.L) {
 		cur.getSong().Err = l.Err
 		fmt.Fprintln(os.Stderr, l.Err)
@@ -244,6 +245,9 @@ func ParseText(src string) Songs {
 				p := cur.newPair()
 				p.Chord = tok.Value
 			}
+		case tokenFrontmatter:
+			cur.frontmatter = tok.Value
+
 		case tokenText:
 			p := cur.getPair()
 			p.Lyric += tok.Value
@@ -269,5 +273,10 @@ func ParseText(src string) Songs {
 
 	}
 
-	return cur.songs
+	f := File{
+		Songs:       cur.songs,
+		Frontmatter: cur.frontmatter,
+	}
+
+	return &f
 }

@@ -40,6 +40,11 @@ type metaItem struct {
 
 type metaItems []*metaItem
 
+type File struct {
+	Frontmatter string
+	Songs       Songs
+}
+
 type Songs []*Song
 
 type Song struct {

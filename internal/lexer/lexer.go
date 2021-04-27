@@ -124,6 +124,12 @@ func (l *L) Peek() rune {
 	return r
 }
 
+// RewindToStart
+func (l *L) RewindToStart() {
+	l.rewind.clear()
+	l.position = l.start
+}
+
 // Rewind will take the last rune read (if any) and rewind back. Rewinds can
 // occur more than once per call to Next but you can never rewind past the
 // last point a token was emitted.

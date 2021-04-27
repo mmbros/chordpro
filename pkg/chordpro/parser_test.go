@@ -4,6 +4,17 @@ import (
 	"testing"
 )
 
+const choGatta = `
+
+			
+   
+---
+title: "La gatta"
+country: "it"
+---
+{t: titolo}
+[C]C'era una volta una [Am]gatta`
+
 const choHero = `{t:Working Class Hero}
 {st:John Lennon}
 
@@ -79,10 +90,12 @@ BY
 SIMOSTRATO!`
 
 func Test_ParseSimple(t *testing.T) {
-	src := choHero
-	ss := ParseText(src)
+	src := choGatta
+	file := ParseText(src)
 
-	t.Logf("SONGS: %s\n", ss.String())
+	t.Logf("FRONTMATTER:\n%s\n", file.Frontmatter)
+
+	t.Logf("SONGS: %s\n", file.Songs)
 
 	t.FailNow()
 }

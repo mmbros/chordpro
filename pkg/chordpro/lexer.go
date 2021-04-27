@@ -7,6 +7,9 @@ import (
 )
 
 const (
+	yamlRune = '-'
+	// tomlRune = '+'
+
 	commentBegin     = '#'
 	chordBegin       = '['
 	chordEnd         = ']'
@@ -22,6 +25,7 @@ const (
 	tokenText
 	tokenChord
 	tokenDirective
+	tokenFrontmatter
 )
 
 func trimDelim(src string) string {
@@ -29,6 +33,90 @@ func trimDelim(src string) string {
 		return src
 	}
 	return src[1 : len(src)-1]
+}
+func stateFrontpageYamlBegin(l *lexer.L) lexer.StateFunc {
+
+	var r rune
+
+	// check for "---"
+	for n := 0; n < 3; n++ {
+		r = l.Next()
+		if r != yamlRune {
+			l.RewindToStart()
+			return stateText
+		}
+	}
+
+	for {
+		r = l.Next()
+		switch r {
+		case ' ', '\t':
+
+		case '\n':
+			// IN YAML FRONTMATTER
+			return stateFrontpageYamlEnd
+
+		default:
+			l.RewindToStart()
+			return stateText
+		}
+	}
+
+}
+
+func stateFrontpageYamlEnd(l *lexer.L) lexer.StateFunc {
+	var r rune
+
+	var pos int
+
+	// /n---/s*/n
+	//  0123...4
+
+	for {
+		r = l.Next()
+		switch r {
+		case yamlRune:
+			if pos >= 0 {
+				pos++
+			}
+		case '\n':
+			if pos == 3 {
+				// '/n' + '-' + '-' + '-' + (/s)* + '/n'
+				l.Emit(tokenFrontmatter)
+				return stateText
+			} else {
+				pos = 0
+			}
+		case ' ', '\t':
+
+		case lexer.EOFRune:
+			l.Emit(tokenFrontmatter)
+			return nil
+
+		default:
+			pos = -1
+		}
+	}
+}
+
+func stateTrimInitialWhitespace(l *lexer.L) lexer.StateFunc {
+	var r rune
+
+	for {
+		r = l.Next()
+		switch r {
+		case ' ', '\t', '\n', '\r':
+			l.Ignore()
+		case lexer.EOFRune:
+			return nil
+		case yamlRune:
+			l.Rewind()
+			return stateFrontpageYamlBegin
+		default:
+			l.Rewind()
+			return stateText
+		}
+	}
 }
 
 func stateText(l *lexer.L) lexer.StateFunc {

@@ -38,7 +38,8 @@ title: ""
 		t.Run(tt.name, func(t *testing.T) {
 
 			// ss := ParseText(src)
-			songs := chordpro.ParseText(tt.input)
+			file := chordpro.ParseText(tt.input)
+			songs := file.Songs
 			builder := strings.Builder{}
 
 			appendFrontMatter(&builder, songs[0])
