@@ -17,6 +17,8 @@ type cursor struct {
 	pair        *ChordLyricPair
 
 	onlyText bool
+
+	lineWithDirective bool
 }
 
 func (c *cursor) newSong() *Song {
@@ -49,6 +51,7 @@ func (c *cursor) newLine() *Line {
 	}
 	c.line = new(Line)
 	c.par.Lines = append(c.par.Lines, c.line)
+	c.lineWithDirective = false
 
 	return c.line
 }
@@ -116,9 +119,9 @@ func (c *cursor) parseDirective(src string) {
 
 	if name == "meta" {
 		v = strings.SplitN(arg, directiveMetaSep, 2)
-		if len(v) == 0 {
-			return
-		}
+		// if len(v) == 0 {
+		// 	return
+		// }
 		name = v[0]
 		if len(v) > 1 {
 			arg = v[1]
@@ -201,6 +204,10 @@ func (c *cursor) parseDirective(src string) {
 	case "eot", "end_of_tab":
 		c.onlyText = false
 		c.closeParagraph()
+	default:
+		// log.Printf("parseDirective: unknown directive %q", name)
+		fieldName = metaInvalid
+		arg = name + ": " + arg
 	}
 
 	if fieldName != metaNone {
@@ -208,6 +215,7 @@ func (c *cursor) parseDirective(src string) {
 		c.getSong().meta.append(fieldName, arg)
 	}
 
+	c.lineWithDirective = true
 }
 
 func ParseText(src string) *File {
@@ -253,7 +261,8 @@ func ParseText(src string) *File {
 			p.Lyric += tok.Value
 		case tokenNewline:
 
-			if cur.getParagraph().ParagraphType == Tab {
+			// doesn't use cur.getParagraph in order not to eventually create a new paragraph
+			if cur.par != nil && cur.par.ParagraphType == Tab {
 				if newlineCounter > 1 {
 					cur.newLine()
 				}

@@ -2,10 +2,7 @@ package chordpro
 
 import (
 	"fmt"
-	"strings"
 )
-
-const pad = "  "
 
 // Meta-data directives
 // Each song can have meta-data associated, for example the song title.
@@ -64,6 +61,31 @@ const (
 	Bridge
 )
 
+func (mfn metaFieldName) String() string {
+	a := []string{
+		"none",
+		"invalid",
+		"title",
+		"sortTitle",
+		"subtitle",
+		"artist",
+		"composer",
+		"lyricist",
+		"copyright",
+		"album",
+		"year",
+		"key",
+		"time",
+		"tempo",
+		"duration",
+		"capo",
+	}
+	if mfn >= metaNone && mfn <= metaCapo {
+		return a[mfn]
+	}
+	return fmt.Sprintf("metaFieldName(%d)", mfn)
+}
+
 func (mis *metaItems) append(name metaFieldName, value string) {
 	*mis = append(*mis, &metaItem{name, value})
 }
@@ -89,6 +111,10 @@ func (mis metaItems) byFieldName1(name metaFieldName) string {
 	}
 	return ""
 }
+
+// func (mi *metaItem) String() string {
+// 	return
+// }
 
 type Paragraph struct {
 	ParagraphType ParagraphType
@@ -121,51 +147,8 @@ func (pt ParagraphType) String() string {
 	case Bridge:
 		return "Bridge"
 	default:
-		return fmt.Sprintf("ParagraphType:%d", pt)
+		return fmt.Sprintf("ParagraphType(%d)", pt)
 	}
-}
-
-func (p *ChordLyricPair) toString(sb *strings.Builder, i int, spad string) {
-	fmt.Fprintf(sb, "%sPAIR #%d: %s / %s\n", spad, i, p.Chord, p.Lyric)
-}
-
-func (l *Line) toString(sb *strings.Builder, i int, spad string) {
-	fmt.Fprintf(sb, "%sLINE #%d\n", spad, i)
-	for j, pair := range l.Pairs {
-		pair.toString(sb, j+1, spad+pad)
-	}
-}
-
-func (p *Paragraph) toString(sb *strings.Builder, i int, spad string) {
-	fmt.Fprintf(sb, "%sPAR #%d <%s>\n", spad, i, p.ParagraphType.String())
-	for j, lin := range p.Lines {
-		lin.toString(sb, j+1, spad+pad)
-	}
-
-}
-
-func (s *Song) toString(sb *strings.Builder, i int, spad string) {
-	fmt.Fprintf(sb, "%sSONG #%d\n", spad, i)
-
-	for _, mi := range s.meta {
-		fmt.Fprintf(sb, "%s> meta%d = %q\n", spad, mi.name, mi.value)
-	}
-
-	for j, par := range s.Paragraphs {
-		par.toString(sb, j+1, spad+pad)
-	}
-}
-
-func (ss Songs) String() string {
-
-	var sb strings.Builder
-
-	fmt.Fprintln(&sb) // newline
-
-	for j, song := range ss {
-		song.toString(&sb, j+1, pad)
-	}
-	return sb.String()
 }
 
 func (s *Song) Title() string {

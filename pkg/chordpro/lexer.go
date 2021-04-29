@@ -8,7 +8,7 @@ import (
 
 const (
 	yamlRune = '-'
-	// tomlRune = '+'
+	tomlRune = '+'
 
 	commentBegin     = '#'
 	chordBegin       = '['
@@ -30,71 +30,71 @@ const (
 
 func trimDelim(src string) string {
 	if len(src) <= 1 {
-		return src
+		return ""
 	}
 	return src[1 : len(src)-1]
 }
-func stateFrontpageYamlBegin(l *lexer.L) lexer.StateFunc {
 
-	var r rune
+func stateFrontpage(char3 rune) lexer.StateFunc {
 
-	// check for "---"
-	for n := 0; n < 3; n++ {
-		r = l.Next()
-		if r != yamlRune {
-			l.RewindToStart()
-			return stateText
-		}
-	}
+	return func(l *lexer.L) lexer.StateFunc {
 
-	for {
-		r = l.Next()
-		switch r {
-		case ' ', '\t':
+		var r rune
 
-		case '\n':
-			// IN YAML FRONTMATTER
-			return stateFrontpageYamlEnd
+		// CHECK IF START FRONTMATTER
 
-		default:
-			l.RewindToStart()
-			return stateText
-		}
-	}
-
-}
-
-func stateFrontpageYamlEnd(l *lexer.L) lexer.StateFunc {
-	var r rune
-
-	var pos int
-
-	// /n---/s*/n
-	//  0123...4
-
-	for {
-		r = l.Next()
-		switch r {
-		case yamlRune:
-			if pos >= 0 {
-				pos++
-			}
-		case '\n':
-			if pos == 3 {
-				// '/n' + '-' + '-' + '-' + (/s)* + '/n'
-				l.Emit(tokenFrontmatter)
+		// check for "---" or "+++"
+		for n := 0; n < 3; n++ {
+			r = l.Next()
+			if r != char3 {
+				l.RewindToStart()
 				return stateText
-			} else {
-				pos = 0
 			}
-		case ' ', '\t':
+		}
 
-		case lexer.EOFRune:
-			l.Emit(tokenFrontmatter)
-			return nil
+		// check for "/s*/n"
+		for {
+			r = l.Next()
+			if r == '\n' {
+				break
+			}
 
-		default:
-			pos = -1
+			switch r {
+			case ' ', '\t', '\r':
+			default:
+				l.RewindToStart()
+				return stateText
+			}
+		}
+
+		// IN FRONTMATTER
+
+		pos := 0
+		// target: /n ch ch ch /s* /n
+		//    pos: 0  1  2  3  ... X
+		for {
+			r = l.Next()
+			switch r {
+			case char3:
+				if pos >= 0 {
+					pos++
+				}
+			case '\n':
+				if pos == 3 {
+					l.Emit(tokenFrontmatter)
+					return stateText
+				} else {
+					pos = 0
+				}
+			case ' ', '\t', '\r':
+				// next rune
+			case lexer.EOFRune:
+				l.Emit(tokenFrontmatter)
+				return nil
+
+			default:
+				pos = -1
+			}
 		}
 	}
 }
@@ -109,9 +109,10 @@ func stateTrimInitialWhitespace(l *lexer.L) lexer.StateFunc {
 			l.Ignore()
 		case lexer.EOFRune:
 			return nil
-		case yamlRune:
+		case yamlRune, tomlRune:
 			l.Rewind()
-			return stateFrontpageYamlBegin
+			// return stateFrontpageYamlBegin
+			return stateFrontpage(r)
 		default:
 			l.Rewind()
 			return stateText

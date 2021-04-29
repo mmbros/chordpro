@@ -2,7 +2,6 @@ package chordpro
 
 import (
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -85,147 +84,21 @@ func Test_metaItems_byFieldName(t *testing.T) {
 	}
 }
 
-func TestParagraphType_String(t *testing.T) {
+func TestMetaFieldName_String(t *testing.T) {
 	tests := []struct {
-		name string
-		pt   ParagraphType
+		mfn  metaFieldName
 		want string
 	}{
-		// TODO: Add test cases.
+		{metaAlbum, "album"},
+		{metaArtist, "artist"},
+		{metaTitle, "title"},
+		{metaSubtitle, "subtitle"},
+		{metaFieldName(-1), "metaFieldName(-1)"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pt.String(); got != tt.want {
-				t.Errorf("ParagraphType.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestChordLyricPair_toString(t *testing.T) {
-	type fields struct {
-		Chord string
-		Lyric string
-	}
-	type args struct {
-		sb   *strings.Builder
-		i    int
-		spad string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &ChordLyricPair{
-				Chord: tt.fields.Chord,
-				Lyric: tt.fields.Lyric,
-			}
-			p.toString(tt.args.sb, tt.args.i, tt.args.spad)
-		})
-	}
-}
-
-func TestLine_toString(t *testing.T) {
-	type fields struct {
-		Pairs []*ChordLyricPair
-	}
-	type args struct {
-		sb   *strings.Builder
-		i    int
-		spad string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &Line{
-				Pairs: tt.fields.Pairs,
-			}
-			l.toString(tt.args.sb, tt.args.i, tt.args.spad)
-		})
-	}
-}
-
-func TestParagraph_toString(t *testing.T) {
-	type fields struct {
-		ParagraphType ParagraphType
-		Label         string
-		Lines         []*Line
-	}
-	type args struct {
-		sb   *strings.Builder
-		i    int
-		spad string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &Paragraph{
-				ParagraphType: tt.fields.ParagraphType,
-				Label:         tt.fields.Label,
-				Lines:         tt.fields.Lines,
-			}
-			p.toString(tt.args.sb, tt.args.i, tt.args.spad)
-		})
-	}
-}
-
-func TestSong_toString(t *testing.T) {
-	type fields struct {
-		meta       metaItems
-		Paragraphs []*Paragraph
-	}
-	type args struct {
-		sb   *strings.Builder
-		i    int
-		spad string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &Song{
-				meta:       tt.fields.meta,
-				Paragraphs: tt.fields.Paragraphs,
-			}
-			s.toString(tt.args.sb, tt.args.i, tt.args.spad)
-		})
-	}
-}
-
-func TestSongs_String(t *testing.T) {
-	tests := []struct {
-		name string
-		ss   Songs
-		want string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.ss.String(); got != tt.want {
-				t.Errorf("Songs.String() = %v, want %v", got, tt.want)
+		t.Run(tt.want, func(t *testing.T) {
+			if got := tt.mfn.String(); got != tt.want {
+				t.Errorf("metaFieldName.String() = %v, want %v", got, tt.want)
 			}
 		})
 	}

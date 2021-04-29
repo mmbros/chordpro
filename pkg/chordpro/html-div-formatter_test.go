@@ -1,7 +1,6 @@
 package chordpro
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -42,27 +41,23 @@ When they've tortured and scared you for twenty odd years.`
 		}
 	}
 
-}
+} /*
 
 func TestHtmlDivFormatter(t *testing.T) {
 	src := `{t:Come Together}
 {st:Beatles}
 {sot}
 The riff that they use in the song goes something like this
-
-
-------------1--------------
--------H----1--3-----------
-------0--2-----------------
-0--0-----------------------
----------------------------
----------------------------
+------------1-----
+-------H----1--3--
+------0--2--------
+0--0--------------
 {eot}
 
 [Dm]Here come old flat top, He come grooving up slowly,
 
 {c:Play riff}
- 
+
 [Dm]He wear no shoe shine, he got toe jam football
 `
 	file := ParseText(src)
@@ -77,3 +72,4 @@ The riff that they use in the song goes something like this
 
 	t.FailNow()
 }
+*/
